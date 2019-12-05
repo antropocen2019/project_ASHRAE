@@ -13124,6 +13124,23 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="-Bevezet&#233;s-"><span style="color:indigo"> Bevezet&#233;s </span><a class="anchor-link" href="#-Bevezet&#233;s-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ebben a versenykiírásban a feladat olyan model fejlesztése, mely képes pontosan előrejelezni egy épület energia fogyasztását a követlező területeken: elektromosság, vízhűtés, gőz , illetve melegvíz. Az adatok több mint 1000 épület három évre visszamenő adatait tartalmazzák.</p>
+<p>A kiírás célja, hogy a energiamegtakarítás jobb becslése révén motiválja a nagybefektetőket és pénzügyi intézményeket a területbe történő befektetésre, ezzel előrelendítve a hatékonyság kiépítését. Általánosságban az épületek energiahatékonyságának javítása illeszkedik napjaink egyik legmeghatározóbb agendájába, a klímaváltozás negatív következményei elleni küzdelemhez. Eszerint a fogyasztás visszafogása csökkentheti a környezeti terhelést, azon belül is különösképp az üvegházhatást okozó gázok kibocsátásának a visszafogását.</p>
+<p>Az energiahatékonyság predikciójában rejlő legjelentősebb kihívás a kontrafaktuális állapot becslése, vagyis jelen esetben annak meghatározása, hogy mennyi energiát fogyasztott volna az adott épület abban az esetben, ha az energiafogyasztással kapcsolatos fejlesztések nem kerültek volna kivitelezésre. A gépi tanulás segítségével olyan model fejlesztése a cél, mely három évet felölelő energetikai mérési és időjárás adatok alapján képes pontos becslést adni az energiahatékonyság javulására vonatkozólag.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="-F&#225;jlok:"><span style="color:indigo"> F&#225;jlok:</span><a class="anchor-link" href="#-F&#225;jlok:">&#182;</a></h3>
 </div>
 </div>
@@ -13156,54 +13173,45 @@ div#notebook {
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span><span class="n">building_meta</span><span class="o">.</span><span class="n">csv</span><span class="o">&lt;/</span><span class="n">b</span><span class="o">&gt;</span>
-
-    <span class="n">site_id</span> <span class="o">-</span> <span class="n">Foreign</span> <span class="n">key</span> <span class="k">for</span> <span class="n">the</span> <span class="n">weather</span> <span class="n">files</span><span class="o">.</span>
-    <span class="n">building_id</span> <span class="o">-</span> <span class="n">Foreign</span> <span class="n">key</span> <span class="k">for</span> <span class="n">training</span><span class="o">.</span><span class="n">csv</span>
-    <span class="n">primary_use</span> <span class="o">-</span> <span class="n">Indicator</span> <span class="n">of</span> <span class="n">the</span> <span class="n">primary</span> <span class="n">category</span> <span class="n">of</span> <span class="n">activities</span> <span class="k">for</span> <span class="n">the</span> <span class="n">building</span> <span class="n">based</span> <span class="n">on</span> <span class="n">EnergyStar</span> <span class="nb">property</span> <span class="nb">type</span> <span class="n">definitions</span>
-    <span class="n">square_feet</span> <span class="o">-</span> <span class="n">Gross</span> <span class="n">floor</span> <span class="n">area</span> <span class="n">of</span> <span class="n">the</span> <span class="n">building</span>
-    <span class="n">year_built</span> <span class="o">-</span> <span class="n">Year</span> <span class="n">building</span> <span class="n">was</span> <span class="n">opened</span>
-    <span class="n">floor_count</span> <span class="o">-</span> <span class="n">Number</span> <span class="n">of</span> <span class="n">floors</span> <span class="n">of</span> <span class="n">the</span> <span class="n">building</span>
-
-<span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span><span class="n">weather_</span><span class="p">[</span><span class="n">train</span><span class="o">/</span><span class="n">test</span><span class="p">]</span><span class="o">.</span><span class="n">csv</span><span class="o">&lt;/</span><span class="n">b</span><span class="o">&gt;</span>
-
-<span class="n">Weather</span> <span class="n">data</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">meteorological</span> <span class="n">station</span> <span class="k">as</span> <span class="n">close</span> <span class="k">as</span> <span class="n">possible</span> <span class="n">to</span> <span class="n">the</span> <span class="n">site</span><span class="o">.</span>
-
-    <span class="n">site_id</span>
-    <span class="n">air_temperature</span> <span class="o">-</span> <span class="n">Degrees</span> <span class="n">Celsius</span>
-    <span class="n">cloud_coverage</span> <span class="o">-</span> <span class="n">Portion</span> <span class="n">of</span> <span class="n">the</span> <span class="n">sky</span> <span class="n">covered</span> <span class="ow">in</span> <span class="n">clouds</span><span class="p">,</span> <span class="ow">in</span> <span class="n">oktas</span>
-    <span class="n">dew_temperature</span> <span class="o">-</span> <span class="n">Degrees</span> <span class="n">Celsius</span>
-    <span class="n">precip_depth_1_hr</span> <span class="o">-</span> <span class="n">Millimeters</span>
-    <span class="n">sea_level_pressure</span> <span class="o">-</span> <span class="n">Millibar</span><span class="o">/</span><span class="n">hectopascals</span>
-    <span class="n">wind_direction</span> <span class="o">-</span> <span class="n">Compass</span> <span class="n">direction</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">360</span><span class="p">)</span>
-    <span class="n">wind_speed</span> <span class="o">-</span> <span class="n">Meters</span> <span class="n">per</span> <span class="n">second</span>
-
-<span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span><span class="n">test</span><span class="o">.</span><span class="n">csv</span><span class="o">&lt;/</span><span class="n">b</span><span class="o">&gt;</span>
-
-<span class="n">The</span> <span class="n">submission</span> <span class="n">files</span> <span class="n">use</span> <span class="n">row</span> <span class="n">numbers</span> <span class="k">for</span> <span class="n">ID</span> <span class="n">codes</span> <span class="ow">in</span> <span class="n">order</span> <span class="n">to</span> <span class="n">save</span> <span class="n">space</span> <span class="n">on</span> <span class="n">the</span> <span class="n">file</span> <span class="n">uploads</span><span class="o">.</span> <span class="n">test</span><span class="o">.</span><span class="n">csv</span> <span class="n">has</span> <span class="n">no</span> <span class="n">feature</span> <span class="n">data</span><span class="p">;</span> <span class="n">it</span> <span class="n">exists</span> <span class="n">so</span> <span class="n">you</span> <span class="n">can</span> <span class="n">get</span> <span class="n">your</span> <span class="n">predictions</span> <span class="n">into</span> <span class="n">the</span> <span class="n">correct</span> <span class="n">order</span><span class="o">.</span>
-
-    <span class="n">row_id</span> <span class="o">-</span> <span class="n">Row</span> <span class="nb">id</span> <span class="k">for</span> <span class="n">your</span> <span class="n">submission</span> <span class="n">file</span>
-    <span class="n">building_id</span> <span class="o">-</span> <span class="n">Building</span> <span class="nb">id</span> <span class="n">code</span>
-    <span class="n">meter</span> <span class="o">-</span> <span class="n">The</span> <span class="n">meter</span> <span class="nb">id</span> <span class="n">code</span>
-    <span class="n">timestamp</span> <span class="o">-</span> <span class="n">Timestamps</span> <span class="k">for</span> <span class="n">the</span> <span class="n">test</span> <span class="n">data</span> <span class="n">period</span>
-
-<span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span><span class="n">sample_submission</span><span class="o">.</span><span class="n">csv</span><span class="o">&lt;/</span><span class="n">b</span><span class="o">&gt;</span>
-
-<span class="n">A</span> <span class="n">valid</span> <span class="n">sample</span> <span class="n">submission</span><span class="o">.</span>
-
-    <span class="n">All</span> <span class="n">floats</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">solution</span> <span class="n">file</span> <span class="n">were</span> <span class="n">truncated</span> <span class="n">to</span> <span class="n">four</span> <span class="n">decimal</span> <span class="n">places</span><span class="p">;</span> <span class="n">we</span> <span class="n">recommend</span> <span class="n">you</span> <span class="n">do</span> <span class="n">the</span> <span class="n">same</span> <span class="n">to</span> <span class="n">save</span> <span class="n">space</span> <span class="n">on</span> <span class="n">your</span> <span class="n">file</span> <span class="n">upload</span><span class="o">.</span>
-    <span class="n">There</span> <span class="n">are</span> <span class="n">gaps</span> <span class="ow">in</span> <span class="n">some</span> <span class="n">of</span> <span class="n">the</span> <span class="n">meter</span> <span class="n">readings</span> <span class="k">for</span> <span class="n">both</span> <span class="n">the</span> <span class="n">train</span> <span class="ow">and</span> <span class="n">test</span> <span class="n">sets</span><span class="o">.</span> <span class="n">Gaps</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">test</span> <span class="nb">set</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">revealed</span> <span class="ow">or</span> <span class="n">scored</span><span class="o">.</span>
-</pre></div>
-
-    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><b>weather_[train/test].csv</b><br/></p>
+<ul>
+<li><i>site_id</i> - Idegen kulcs az időjárás fájlhoz.</li><br/>
+<li><i>air_temperature</i> - Hőmérséklet Celsius fokban</li><br/>
+<li><i>cloud_coverage</i> - Az arány, amilyen mértékben felhők borítják az eget</li><br/>
+<li><i>dew_temperature</i> - Harmatpont Celsius fokban</li><br/>
+<li><i>precip_depth_1_hr</i> - Csapadékmennyiség millimeterben</li><br/>
+<li><i>sea_level_pressure</i> - Tengerszintre átszámított légnyomás millibárban</li><br/>
+<li><i>wind_direction</i> - Szélirány iránytű szerinti fokban</li><br/>
+<li><i>wind_speed</i> - Szélerősség m/s-ban</li><br/>
+</ul>
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><b>test.csv</b><br/></p>
+<ul>
+<li><i>row_id</i> - Idegen kulcs az időjárás fájlhoz</li><br/>
+<li><i>building_id</i> - Idegen kulcs a training fájlhoz</li><br/>
+<li><i>meter</i> - A mérő azonosító kódja (0: elektromosság (electricity), 1: vízhűtés (chilledwater), 2: gőz (steam), 3: melegvíz (hotwater). Nem minden épület rendelkezik minden mérő típussal.</li><br/>
+<li><i>timestamp</i> - az időpont, amikor a mérés megvalósult</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><b>sample_submission.csv</b></p>
 
+<pre><code>Az érvényes minta.</code></pre>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -13214,7 +13222,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Csomagok importálása validációhoz</span>
@@ -13230,12 +13238,881 @@ div#notebook {
 
 <span class="c1"># Csomagok importálása modellezéshez</span>
 <span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
-<span class="kn">import</span> <span class="nn">catboost</span> <span class="k">as</span> <span class="nn">cbt</span>
+<span class="c1">#import catboost as cbt</span>
 <span class="kn">import</span> <span class="nn">lightgbm</span> <span class="k">as</span> <span class="nn">lgbm</span>
 
 <span class="c1"># Általános csomagok importálása</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">nd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="-Adatok-bet&#246;lt&#233;se-"><span style="color:dimgray"> Adatok bet&#246;lt&#233;se </span><a class="anchor-link" href="#-Adatok-bet&#246;lt&#233;se-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Az elérési út megadása</span>
+<span class="n">root</span> <span class="o">=</span> <span class="s1">&#39;C:/Users/ZsoltNagy/Desktop/github_projects/ASHRAE/project_ASHRAE/Data&#39;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Adatok betöltése</span>
+<span class="n">df_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;train.csv&#39;</span><span class="p">))</span>
+<span class="n">df_test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;test.csv&#39;</span><span class="p">))</span>
+<span class="n">df_weather_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;weather_train.csv&#39;</span><span class="p">))</span>
+<span class="n">df_weather_test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;weather_test.csv&#39;</span><span class="p">))</span>
+<span class="n">df_building</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;building_metadata.csv&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Gyors pillantás az adatokra</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_weather_train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_weather_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_building</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>building_id</th>
+      <th>meter</th>
+      <th>timestamp</th>
+      <th>meter_reading</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>row_id</th>
+      <th>building_id</th>
+      <th>meter</th>
+      <th>timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>4</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>5</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>6</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>7</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>7</td>
+      <td>1</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>8</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_id</th>
+      <th>timestamp</th>
+      <th>air_temperature</th>
+      <th>cloud_coverage</th>
+      <th>dew_temperature</th>
+      <th>precip_depth_1_hr</th>
+      <th>sea_level_pressure</th>
+      <th>wind_direction</th>
+      <th>wind_speed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.7</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>2016-01-01 01:00:00</td>
+      <td>24.4</td>
+      <td>NaN</td>
+      <td>21.1</td>
+      <td>-1.0</td>
+      <td>1020.2</td>
+      <td>70.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>2016-01-01 02:00:00</td>
+      <td>22.8</td>
+      <td>2.0</td>
+      <td>21.1</td>
+      <td>0.0</td>
+      <td>1020.2</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>2016-01-01 03:00:00</td>
+      <td>21.1</td>
+      <td>2.0</td>
+      <td>20.6</td>
+      <td>0.0</td>
+      <td>1020.1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>2016-01-01 04:00:00</td>
+      <td>20.0</td>
+      <td>2.0</td>
+      <td>20.0</td>
+      <td>-1.0</td>
+      <td>1020.0</td>
+      <td>250.0</td>
+      <td>2.6</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>2016-01-01 05:00:00</td>
+      <td>19.4</td>
+      <td>NaN</td>
+      <td>19.4</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0</td>
+      <td>2016-01-01 06:00:00</td>
+      <td>21.1</td>
+      <td>6.0</td>
+      <td>21.1</td>
+      <td>-1.0</td>
+      <td>1019.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0</td>
+      <td>2016-01-01 07:00:00</td>
+      <td>21.1</td>
+      <td>NaN</td>
+      <td>21.1</td>
+      <td>0.0</td>
+      <td>1018.8</td>
+      <td>210.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0</td>
+      <td>2016-01-01 08:00:00</td>
+      <td>20.6</td>
+      <td>NaN</td>
+      <td>20.0</td>
+      <td>0.0</td>
+      <td>1018.1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0</td>
+      <td>2016-01-01 09:00:00</td>
+      <td>21.1</td>
+      <td>NaN</td>
+      <td>20.6</td>
+      <td>0.0</td>
+      <td>1019.0</td>
+      <td>290.0</td>
+      <td>1.5</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_id</th>
+      <th>timestamp</th>
+      <th>air_temperature</th>
+      <th>cloud_coverage</th>
+      <th>dew_temperature</th>
+      <th>precip_depth_1_hr</th>
+      <th>sea_level_pressure</th>
+      <th>wind_direction</th>
+      <th>wind_speed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>17.8</td>
+      <td>4.0</td>
+      <td>11.7</td>
+      <td>NaN</td>
+      <td>1021.4</td>
+      <td>100.0</td>
+      <td>3.6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>2017-01-01 01:00:00</td>
+      <td>17.8</td>
+      <td>2.0</td>
+      <td>12.8</td>
+      <td>0.0</td>
+      <td>1022.0</td>
+      <td>130.0</td>
+      <td>3.1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>2017-01-01 02:00:00</td>
+      <td>16.1</td>
+      <td>0.0</td>
+      <td>12.8</td>
+      <td>0.0</td>
+      <td>1021.9</td>
+      <td>140.0</td>
+      <td>3.1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>2017-01-01 03:00:00</td>
+      <td>17.2</td>
+      <td>0.0</td>
+      <td>13.3</td>
+      <td>0.0</td>
+      <td>1022.2</td>
+      <td>140.0</td>
+      <td>3.1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>2017-01-01 04:00:00</td>
+      <td>16.7</td>
+      <td>2.0</td>
+      <td>13.3</td>
+      <td>0.0</td>
+      <td>1022.3</td>
+      <td>130.0</td>
+      <td>2.6</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>2017-01-01 05:00:00</td>
+      <td>15.6</td>
+      <td>2.0</td>
+      <td>12.8</td>
+      <td>0.0</td>
+      <td>1022.1</td>
+      <td>130.0</td>
+      <td>2.1</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0</td>
+      <td>2017-01-01 06:00:00</td>
+      <td>15.0</td>
+      <td>0.0</td>
+      <td>12.8</td>
+      <td>0.0</td>
+      <td>1021.7</td>
+      <td>150.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0</td>
+      <td>2017-01-01 07:00:00</td>
+      <td>15.0</td>
+      <td>2.0</td>
+      <td>13.3</td>
+      <td>0.0</td>
+      <td>1021.6</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0</td>
+      <td>2017-01-01 08:00:00</td>
+      <td>13.3</td>
+      <td>0.0</td>
+      <td>12.2</td>
+      <td>0.0</td>
+      <td>1021.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0</td>
+      <td>2017-01-01 09:00:00</td>
+      <td>12.2</td>
+      <td>4.0</td>
+      <td>11.7</td>
+      <td>0.0</td>
+      <td>1021.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_id</th>
+      <th>building_id</th>
+      <th>primary_use</th>
+      <th>square_feet</th>
+      <th>year_built</th>
+      <th>floor_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>7432</td>
+      <td>2008.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>1</td>
+      <td>Education</td>
+      <td>2720</td>
+      <td>2004.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>2</td>
+      <td>Education</td>
+      <td>5376</td>
+      <td>1991.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>3</td>
+      <td>Education</td>
+      <td>23685</td>
+      <td>2002.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>4</td>
+      <td>Education</td>
+      <td>116607</td>
+      <td>1975.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>5</td>
+      <td>Education</td>
+      <td>8000</td>
+      <td>2000.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0</td>
+      <td>6</td>
+      <td>Lodging/residential</td>
+      <td>27926</td>
+      <td>1981.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0</td>
+      <td>7</td>
+      <td>Education</td>
+      <td>121074</td>
+      <td>1989.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0</td>
+      <td>8</td>
+      <td>Education</td>
+      <td>60809</td>
+      <td>2003.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0</td>
+      <td>9</td>
+      <td>Office</td>
+      <td>27000</td>
+      <td>2010.0</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Alapinformációk lekérése az adatszetekről</span>
+<span class="n">df_train</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">df_test</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">df_weather_train</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">df_weather_test</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">df_building</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+RangeIndex: 20216100 entries, 0 to 20216099
+Data columns (total 4 columns):
+building_id      int64
+meter            int64
+timestamp        object
+meter_reading    float64
+dtypes: float64(1), int64(2), object(1)
+memory usage: 616.9+ MB
+
+&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+RangeIndex: 41697600 entries, 0 to 41697599
+Data columns (total 4 columns):
+row_id         int64
+building_id    int64
+meter          int64
+timestamp      object
+dtypes: int64(3), object(1)
+memory usage: 1.2+ GB
+
+&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+RangeIndex: 139773 entries, 0 to 139772
+Data columns (total 9 columns):
+site_id               139773 non-null int64
+timestamp             139773 non-null object
+air_temperature       139718 non-null float64
+cloud_coverage        70600 non-null float64
+dew_temperature       139660 non-null float64
+precip_depth_1_hr     89484 non-null float64
+sea_level_pressure    129155 non-null float64
+wind_direction        133505 non-null float64
+wind_speed            139469 non-null float64
+dtypes: float64(7), int64(1), object(1)
+memory usage: 9.6+ MB
+
+&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+RangeIndex: 277243 entries, 0 to 277242
+Data columns (total 9 columns):
+site_id               277243 non-null int64
+timestamp             277243 non-null object
+air_temperature       277139 non-null float64
+cloud_coverage        136795 non-null float64
+dew_temperature       276916 non-null float64
+precip_depth_1_hr     181655 non-null float64
+sea_level_pressure    255978 non-null float64
+wind_direction        264873 non-null float64
+wind_speed            276783 non-null float64
+dtypes: float64(7), int64(1), object(1)
+memory usage: 19.0+ MB
+
+&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+RangeIndex: 1449 entries, 0 to 1448
+Data columns (total 6 columns):
+site_id        1449 non-null int64
+building_id    1449 non-null int64
+primary_use    1449 non-null object
+square_feet    1449 non-null int64
+year_built     675 non-null float64
+floor_count    355 non-null float64
+dtypes: float64(2), int64(3), object(1)
+memory usage: 68.0+ KB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="-Mem&#243;riahaszn&#225;lat-cs&#246;kkent&#233;se-"><span style="color:dimgray"> Mem&#243;riahaszn&#225;lat cs&#246;kkent&#233;se </span><a class="anchor-link" href="#-Mem&#243;riahaszn&#225;lat-cs&#246;kkent&#233;se-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="A-train-&#233;s-test-adatszetek-mem&#243;riahaszn&#225;lata-jelent&#337;s,-mely-hat&#233;konyan-cs&#246;kkenthet&#337;-a-v&#225;ltoz&#243;k-konvert&#225;l&#225;s&#225;val">A train &#233;s test adatszetek mem&#243;riahaszn&#225;lata jelent&#337;s, mely hat&#233;konyan cs&#246;kkenthet&#337; a v&#225;ltoz&#243;k konvert&#225;l&#225;s&#225;val<a class="anchor-link" href="#A-train-&#233;s-test-adatszetek-mem&#243;riahaszn&#225;lata-jelent&#337;s,-mely-hat&#233;konyan-cs&#246;kkenthet&#337;-a-v&#225;ltoz&#243;k-konvert&#225;l&#225;s&#225;val">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
