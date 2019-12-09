@@ -13222,7 +13222,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Csomagok importálása validációhoz</span>
@@ -13243,8 +13243,9 @@ div#notebook {
 
 <span class="c1"># Általános csomagok importálása</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">nd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display_html</span> 
 </pre></div>
 
     </div>
@@ -13261,7 +13262,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Az elérési út megadása</span>
@@ -13275,7 +13276,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Adatok betöltése</span>
@@ -13293,7 +13294,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Gyors pillantás az adatokra</span>
@@ -13995,7 +13996,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Alapinformációk lekérése az adatszetekről</span>
@@ -14104,6 +14105,1458 @@ memory usage: 68.0+ KB
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h4 id="A-train-&#233;s-test-adatszetek-mem&#243;riahaszn&#225;lata-jelent&#337;s,-mely-hat&#233;konyan-cs&#246;kkenthet&#337;-a-v&#225;ltoz&#243;k-konvert&#225;l&#225;s&#225;val">A train &#233;s test adatszetek mem&#243;riahaszn&#225;lata jelent&#337;s, mely hat&#233;konyan cs&#246;kkenthet&#337; a v&#225;ltoz&#243;k konvert&#225;l&#225;s&#225;val<a class="anchor-link" href="#A-train-&#233;s-test-adatszetek-mem&#243;riahaszn&#225;lata-jelent&#337;s,-mely-hat&#233;konyan-cs&#246;kkenthet&#337;-a-v&#225;ltoz&#243;k-konvert&#225;l&#225;s&#225;val">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">## Függvény a memóriahasználat csökkentéséhez. Forrás: https://www.kaggle.com/caesarlupum/ashrae-start-here-a-gentle-introduction</span>
+<span class="k">def</span> <span class="nf">reduce_mem_usage</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">numerics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;int16&#39;</span><span class="p">,</span> <span class="s1">&#39;int32&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;float16&#39;</span><span class="p">,</span> <span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">]</span>
+    <span class="n">start_mem</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span>    
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">col_type</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">dtypes</span>
+        <span class="k">if</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="n">numerics</span><span class="p">:</span>
+            <span class="n">c_min</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">c_max</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_type</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">c_min</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span><span class="o">.</span><span class="n">min</span> <span class="ow">and</span> <span class="n">c_max</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">c_min</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span><span class="o">.</span><span class="n">min</span> <span class="ow">and</span> <span class="n">c_max</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">c_min</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">min</span> <span class="ow">and</span> <span class="n">c_max</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">c_min</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">min</span> <span class="ow">and</span> <span class="n">c_max</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>  
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">c_min</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span><span class="o">.</span><span class="n">min</span> <span class="ow">and</span> <span class="n">c_max</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">c_min</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">min</span> <span class="ow">and</span> <span class="n">c_max</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>    
+    <span class="n">end_mem</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Mem. usage decreased to </span><span class="si">{:5.2f}</span><span class="s1"> Mb (</span><span class="si">{:.1f}% r</span><span class="s1">eduction)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end_mem</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">start_mem</span> <span class="o">-</span> <span class="n">end_mem</span><span class="p">)</span> <span class="o">/</span> <span class="n">start_mem</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># A memóriahasználatot csökkentő függvény alkalmazása</span>
+
+<span class="n">df_train_red</span> <span class="o">=</span> <span class="n">reduce_mem_usage</span><span class="p">(</span><span class="n">df_train</span><span class="p">)</span>
+<span class="n">df_test_red</span> <span class="o">=</span> <span class="n">reduce_mem_usage</span><span class="p">(</span><span class="n">df_test</span><span class="p">)</span>
+<span class="n">df_weather_train_red</span> <span class="o">=</span> <span class="n">reduce_mem_usage</span><span class="p">(</span><span class="n">df_weather_train</span><span class="p">)</span>
+<span class="n">df_weather_test_red</span> <span class="o">=</span> <span class="n">reduce_mem_usage</span><span class="p">(</span><span class="n">df_weather_test</span><span class="p">)</span>
+<span class="n">df_building_red</span> <span class="o">=</span> <span class="n">reduce_mem_usage</span><span class="p">(</span><span class="n">df_building</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Mem. usage decreased to 289.19 Mb (53.1% reduction)
+Mem. usage decreased to 596.49 Mb (53.1% reduction)
+Mem. usage decreased to  3.07 Mb (68.1% reduction)
+Mem. usage decreased to  6.08 Mb (68.1% reduction)
+Mem. usage decreased to  0.03 Mb (60.3% reduction)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Alapstatisztikák lekérése az adatok transzformáció előtti és utáni összehasonlításához:</span>
+
+<span class="c1"># df_train</span>
+<span class="n">desc_dftrain</span> <span class="o">=</span> <span class="n">df_train</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="n">desc_dftrain_red</span> <span class="o">=</span> <span class="n">df_train_red</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="n">desc_dftrain_styler</span> <span class="o">=</span> <span class="n">desc_dftrain</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Eredeti df_train&#39;</span><span class="p">)</span>
+<span class="n">desc_dftrain_red_styler</span> <span class="o">=</span> <span class="n">desc_dftrain_red</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Transzformált df_train&#39;</span><span class="p">)</span>
+
+<span class="n">display_html</span><span class="p">(</span><span class="n">desc_dftrain_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span><span class="o">+</span><span class="n">desc_dftrain_red_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># df_test</span>
+<span class="n">desc_dftest</span> <span class="o">=</span> <span class="n">df_test</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="n">desc_dftest_red</span> <span class="o">=</span> <span class="n">df_test_red</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="n">desc_dftest_styler</span> <span class="o">=</span> <span class="n">desc_dftest</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Eredeti df_test&#39;</span><span class="p">)</span>
+<span class="n">desc_dftest_red_styler</span> <span class="o">=</span> <span class="n">desc_dftest_red</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Transzformált df_test&#39;</span><span class="p">)</span>
+
+<span class="n">display_html</span><span class="p">(</span><span class="n">desc_dftest_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span><span class="o">+</span><span class="n">desc_dftest_red_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># df_weather_train</span>
+<span class="n">desc_dfweather_train</span> <span class="o">=</span> <span class="n">df_weather_train</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="n">desc_dfweather_train_red</span> <span class="o">=</span> <span class="n">df_weather_train_red</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="n">desc_dfweather_train_styler</span> <span class="o">=</span> <span class="n">desc_dfweather_train</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Eredeti df_weather_train&#39;</span><span class="p">)</span>
+<span class="n">desc_dfweather_train_red_styler</span> <span class="o">=</span> <span class="n">desc_dfweather_train_red</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Transzformált df_weather_train&#39;</span><span class="p">)</span>
+
+<span class="n">display_html</span><span class="p">(</span><span class="n">desc_dfweather_train_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span><span class="o">+</span><span class="n">desc_dfweather_train_red_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># df_weather_test</span>
+<span class="n">desc_dfweather_test</span> <span class="o">=</span> <span class="n">df_weather_test</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="n">desc_dfweather_test_red</span> <span class="o">=</span> <span class="n">df_weather_test_red</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="n">desc_dfweather_test_styler</span> <span class="o">=</span> <span class="n">desc_dfweather_test</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Eredeti df_weather_test&#39;</span><span class="p">)</span>
+<span class="n">desc_dfweather_test_red_styler</span> <span class="o">=</span> <span class="n">desc_dfweather_test_red</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Transzformált df_weather_test&#39;</span><span class="p">)</span>
+
+<span class="n">display_html</span><span class="p">(</span><span class="n">desc_dfweather_test_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span><span class="o">+</span><span class="n">desc_dfweather_test_red_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># building</span>
+<span class="n">desc_dfbuilding</span> <span class="o">=</span> <span class="n">df_building</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="n">desc_dfbuilding_red</span> <span class="o">=</span> <span class="n">df_building_red</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="n">desc_dfbuilding_styler</span> <span class="o">=</span> <span class="n">desc_dfbuilding</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Eredeti df_building&#39;</span><span class="p">)</span>
+<span class="n">desc_dfbuilding_red_styler</span> <span class="o">=</span> <span class="n">desc_dfbuilding_red</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s2">&quot;style=&#39;display:inline&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Transzformált df_building&#39;</span><span class="p">)</span>
+
+<span class="n">display_html</span><span class="p">(</span><span class="n">desc_dfbuilding_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span><span class="o">+</span><span class="n">desc_dfbuilding_red_styler</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style  type="text/css" >
+</style>  
+<table id="T_06db0934_1a69_11ea_96ac_88b1115a753e" style='display:inline'><caption>Eredeti df_train</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >building_id</th> 
+        <th class="col_heading level0 col1" >meter</th> 
+        <th class="col_heading level0 col2" >meter_reading</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow0_col0" class="data row0 col0" >2.02161e+07</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow0_col1" class="data row0 col1" >2.02161e+07</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow0_col2" class="data row0 col2" >2.02161e+07</td> 
+    </tr>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow1_col0" class="data row1 col0" >799.278</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow1_col1" class="data row1 col1" >0.662441</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow1_col2" class="data row1 col2" >1988.71</td> 
+    </tr>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow2_col0" class="data row2 col0" >426.913</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow2_col1" class="data row2 col1" >0.930992</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow2_col2" class="data row2 col2" >153216</td> 
+    </tr>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow3_col1" class="data row3 col1" >0</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow4_col0" class="data row4 col0" >393</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow4_col1" class="data row4 col1" >0</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow4_col2" class="data row4 col2" >18.3</td> 
+    </tr>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow5_col0" class="data row5 col0" >895</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow5_col1" class="data row5 col1" >0</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow5_col2" class="data row5 col2" >78.775</td> 
+    </tr>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow6_col0" class="data row6 col0" >1179</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow6_col1" class="data row6 col1" >1</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow6_col2" class="data row6 col2" >267.984</td> 
+    </tr>    <tr> 
+        <th id="T_06db0934_1a69_11ea_96ac_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow7_col0" class="data row7 col0" >1448</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow7_col1" class="data row7 col1" >3</td> 
+        <td id="T_06db0934_1a69_11ea_96ac_88b1115a753erow7_col2" class="data row7 col2" >2.19047e+07</td> 
+    </tr></tbody> 
+</table> <style  type="text/css" >
+</style>  
+<table id="T_06dba534_1a69_11ea_9bbe_88b1115a753e" style='display:inline'><caption>Transzformált df_train</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >building_id</th> 
+        <th class="col_heading level0 col1" >meter</th> 
+        <th class="col_heading level0 col2" >meter_reading</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow0_col0" class="data row0 col0" >2.02161e+07</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow0_col1" class="data row0 col1" >2.02161e+07</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow0_col2" class="data row0 col2" >2.02161e+07</td> 
+    </tr>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow1_col0" class="data row1 col0" >799.278</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow1_col1" class="data row1 col1" >0.662441</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow1_col2" class="data row1 col2" >1988.71</td> 
+    </tr>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow2_col0" class="data row2 col0" >426.913</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow2_col1" class="data row2 col1" >0.930992</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow2_col2" class="data row2 col2" >153216</td> 
+    </tr>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow3_col1" class="data row3 col1" >0</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow4_col0" class="data row4 col0" >393</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow4_col1" class="data row4 col1" >0</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow4_col2" class="data row4 col2" >18.3</td> 
+    </tr>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow5_col0" class="data row5 col0" >895</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow5_col1" class="data row5 col1" >0</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow5_col2" class="data row5 col2" >78.775</td> 
+    </tr>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow6_col0" class="data row6 col0" >1179</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow6_col1" class="data row6 col1" >1</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow6_col2" class="data row6 col2" >267.984</td> 
+    </tr>    <tr> 
+        <th id="T_06dba534_1a69_11ea_9bbe_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow7_col0" class="data row7 col0" >1448</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow7_col1" class="data row7 col1" >3</td> 
+        <td id="T_06dba534_1a69_11ea_9bbe_88b1115a753erow7_col2" class="data row7 col2" >2.19047e+07</td> 
+    </tr></tbody> 
+</table> 
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style  type="text/css" >
+</style>  
+<table id="T_1cb6db0a_1a69_11ea_9263_88b1115a753e" style='display:inline'><caption>Eredeti df_test</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >row_id</th> 
+        <th class="col_heading level0 col1" >building_id</th> 
+        <th class="col_heading level0 col2" >meter</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow0_col0" class="data row0 col0" >4.16976e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow0_col1" class="data row0 col1" >4.16976e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow0_col2" class="data row0 col2" >4.16976e+07</td> 
+    </tr>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow1_col0" class="data row1 col0" >2.08488e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow1_col1" class="data row1 col1" >807.582</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow1_col2" class="data row1 col2" >0.664286</td> 
+    </tr>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow2_col0" class="data row2 col0" >1.20371e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow2_col1" class="data row2 col1" >429.768</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow2_col2" class="data row2 col2" >0.927807</td> 
+    </tr>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow3_col1" class="data row3 col1" >0</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow4_col0" class="data row4 col0" >1.04244e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow4_col1" class="data row4 col1" >404.75</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow4_col2" class="data row4 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow5_col0" class="data row5 col0" >2.08488e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow5_col1" class="data row5 col1" >900</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow5_col2" class="data row5 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow6_col0" class="data row6 col0" >3.12732e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow6_col1" class="data row6 col1" >1194.25</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow6_col2" class="data row6 col2" >1</td> 
+    </tr>    <tr> 
+        <th id="T_1cb6db0a_1a69_11ea_9263_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow7_col0" class="data row7 col0" >4.16976e+07</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow7_col1" class="data row7 col1" >1448</td> 
+        <td id="T_1cb6db0a_1a69_11ea_9263_88b1115a753erow7_col2" class="data row7 col2" >3</td> 
+    </tr></tbody> 
+</table> <style  type="text/css" >
+</style>  
+<table id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753e" style='display:inline'><caption>Transzformált df_test</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >row_id</th> 
+        <th class="col_heading level0 col1" >building_id</th> 
+        <th class="col_heading level0 col2" >meter</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow0_col0" class="data row0 col0" >4.16976e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow0_col1" class="data row0 col1" >4.16976e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow0_col2" class="data row0 col2" >4.16976e+07</td> 
+    </tr>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow1_col0" class="data row1 col0" >2.08488e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow1_col1" class="data row1 col1" >807.582</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow1_col2" class="data row1 col2" >0.664286</td> 
+    </tr>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow2_col0" class="data row2 col0" >1.20371e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow2_col1" class="data row2 col1" >429.768</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow2_col2" class="data row2 col2" >0.927807</td> 
+    </tr>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow3_col1" class="data row3 col1" >0</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow4_col0" class="data row4 col0" >1.04244e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow4_col1" class="data row4 col1" >404.75</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow4_col2" class="data row4 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow5_col0" class="data row5 col0" >2.08488e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow5_col1" class="data row5 col1" >900</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow5_col2" class="data row5 col2" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow6_col0" class="data row6 col0" >3.12732e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow6_col1" class="data row6 col1" >1194.25</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow6_col2" class="data row6 col2" >1</td> 
+    </tr>    <tr> 
+        <th id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow7_col0" class="data row7 col0" >4.16976e+07</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow7_col1" class="data row7 col1" >1448</td> 
+        <td id="T_1cb7521c_1a69_11ea_8fa1_88b1115a753erow7_col2" class="data row7 col2" >3</td> 
+    </tr></tbody> 
+</table> 
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style  type="text/css" >
+</style>  
+<table id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753e" style='display:inline'><caption>Eredeti df_weather_train</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >site_id</th> 
+        <th class="col_heading level0 col1" >air_temperature</th> 
+        <th class="col_heading level0 col2" >cloud_coverage</th> 
+        <th class="col_heading level0 col3" >dew_temperature</th> 
+        <th class="col_heading level0 col4" >precip_depth_1_hr</th> 
+        <th class="col_heading level0 col5" >sea_level_pressure</th> 
+        <th class="col_heading level0 col6" >wind_direction</th> 
+        <th class="col_heading level0 col7" >wind_speed</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col0" class="data row0 col0" >139773</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col1" class="data row0 col1" >139718</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col2" class="data row0 col2" >70600</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col3" class="data row0 col3" >139660</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col4" class="data row0 col4" >89484</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col5" class="data row0 col5" >129155</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col6" class="data row0 col6" >133505</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow0_col7" class="data row0 col7" >139469</td> 
+    </tr>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col0" class="data row1 col0" >7.47898</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col1" class="data row1 col1" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col2" class="data row1 col2" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col3" class="data row1 col3" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col4" class="data row1 col4" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col5" class="data row1 col5" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col6" class="data row1 col6" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow1_col7" class="data row1 col7" >nan</td> 
+    </tr>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col0" class="data row2 col0" >4.60474</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col1" class="data row2 col1" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col2" class="data row2 col2" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col3" class="data row2 col3" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col4" class="data row2 col4" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col5" class="data row2 col5" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col6" class="data row2 col6" >nan</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow2_col7" class="data row2 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col1" class="data row3 col1" >-28.9062</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col3" class="data row3 col3" >-35</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col4" class="data row3 col4" >-1</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col5" class="data row3 col5" >968</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col6" class="data row3 col6" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow3_col7" class="data row3 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col0" class="data row4 col0" >3</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col1" class="data row4 col1" >7.19922</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col2" class="data row4 col2" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col3" class="data row4 col3" >0.600098</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col4" class="data row4 col4" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col5" class="data row4 col5" >1012</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col6" class="data row4 col6" >80</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow4_col7" class="data row4 col7" >2.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col0" class="data row5 col0" >7</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col1" class="data row5 col1" >15</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col2" class="data row5 col2" >2</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col3" class="data row5 col3" >8.29688</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col4" class="data row5 col4" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col5" class="data row5 col5" >1016.5</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col6" class="data row5 col6" >190</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow5_col7" class="data row5 col7" >3.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col0" class="data row6 col0" >11</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col1" class="data row6 col1" >22.2031</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col2" class="data row6 col2" >4</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col3" class="data row6 col3" >14.3984</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col4" class="data row6 col4" >0</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col5" class="data row6 col5" >1021</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col6" class="data row6 col6" >280</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow6_col7" class="data row6 col7" >5</td> 
+    </tr>    <tr> 
+        <th id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col0" class="data row7 col0" >15</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col1" class="data row7 col1" >47.1875</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col2" class="data row7 col2" >9</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col3" class="data row7 col3" >26.0938</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col4" class="data row7 col4" >343</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col5" class="data row7 col5" >1046</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col6" class="data row7 col6" >360</td> 
+        <td id="T_1d1022ae_1a69_11ea_a6c2_88b1115a753erow7_col7" class="data row7 col7" >19</td> 
+    </tr></tbody> 
+</table> <style  type="text/css" >
+</style>  
+<table id="T_1d10e646_1a69_11ea_a53c_88b1115a753e" style='display:inline'><caption>Transzformált df_weather_train</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >site_id</th> 
+        <th class="col_heading level0 col1" >air_temperature</th> 
+        <th class="col_heading level0 col2" >cloud_coverage</th> 
+        <th class="col_heading level0 col3" >dew_temperature</th> 
+        <th class="col_heading level0 col4" >precip_depth_1_hr</th> 
+        <th class="col_heading level0 col5" >sea_level_pressure</th> 
+        <th class="col_heading level0 col6" >wind_direction</th> 
+        <th class="col_heading level0 col7" >wind_speed</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col0" class="data row0 col0" >139773</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col1" class="data row0 col1" >139718</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col2" class="data row0 col2" >70600</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col3" class="data row0 col3" >139660</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col4" class="data row0 col4" >89484</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col5" class="data row0 col5" >129155</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col6" class="data row0 col6" >133505</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow0_col7" class="data row0 col7" >139469</td> 
+    </tr>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col0" class="data row1 col0" >7.47898</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col1" class="data row1 col1" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col2" class="data row1 col2" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col3" class="data row1 col3" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col4" class="data row1 col4" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col5" class="data row1 col5" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col6" class="data row1 col6" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow1_col7" class="data row1 col7" >nan</td> 
+    </tr>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col0" class="data row2 col0" >4.60474</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col1" class="data row2 col1" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col2" class="data row2 col2" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col3" class="data row2 col3" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col4" class="data row2 col4" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col5" class="data row2 col5" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col6" class="data row2 col6" >nan</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow2_col7" class="data row2 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col1" class="data row3 col1" >-28.9062</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col3" class="data row3 col3" >-35</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col4" class="data row3 col4" >-1</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col5" class="data row3 col5" >968</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col6" class="data row3 col6" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow3_col7" class="data row3 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col0" class="data row4 col0" >3</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col1" class="data row4 col1" >7.19922</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col2" class="data row4 col2" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col3" class="data row4 col3" >0.600098</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col4" class="data row4 col4" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col5" class="data row4 col5" >1012</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col6" class="data row4 col6" >80</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow4_col7" class="data row4 col7" >2.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col0" class="data row5 col0" >7</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col1" class="data row5 col1" >15</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col2" class="data row5 col2" >2</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col3" class="data row5 col3" >8.29688</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col4" class="data row5 col4" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col5" class="data row5 col5" >1016.5</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col6" class="data row5 col6" >190</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow5_col7" class="data row5 col7" >3.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col0" class="data row6 col0" >11</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col1" class="data row6 col1" >22.2031</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col2" class="data row6 col2" >4</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col3" class="data row6 col3" >14.3984</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col4" class="data row6 col4" >0</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col5" class="data row6 col5" >1021</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col6" class="data row6 col6" >280</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow6_col7" class="data row6 col7" >5</td> 
+    </tr>    <tr> 
+        <th id="T_1d10e646_1a69_11ea_a53c_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col0" class="data row7 col0" >15</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col1" class="data row7 col1" >47.1875</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col2" class="data row7 col2" >9</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col3" class="data row7 col3" >26.0938</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col4" class="data row7 col4" >343</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col5" class="data row7 col5" >1046</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col6" class="data row7 col6" >360</td> 
+        <td id="T_1d10e646_1a69_11ea_a53c_88b1115a753erow7_col7" class="data row7 col7" >19</td> 
+    </tr></tbody> 
+</table> 
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style  type="text/css" >
+</style>  
+<table id="T_1de66618_1a69_11ea_a58e_88b1115a753e" style='display:inline'><caption>Eredeti df_weather_test</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >site_id</th> 
+        <th class="col_heading level0 col1" >air_temperature</th> 
+        <th class="col_heading level0 col2" >cloud_coverage</th> 
+        <th class="col_heading level0 col3" >dew_temperature</th> 
+        <th class="col_heading level0 col4" >precip_depth_1_hr</th> 
+        <th class="col_heading level0 col5" >sea_level_pressure</th> 
+        <th class="col_heading level0 col6" >wind_direction</th> 
+        <th class="col_heading level0 col7" >wind_speed</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col0" class="data row0 col0" >277243</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col1" class="data row0 col1" >277139</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col2" class="data row0 col2" >136795</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col3" class="data row0 col3" >276916</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col4" class="data row0 col4" >181655</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col5" class="data row0 col5" >255978</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col6" class="data row0 col6" >264873</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow0_col7" class="data row0 col7" >276783</td> 
+    </tr>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col0" class="data row1 col0" >7.48465</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col1" class="data row1 col1" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col2" class="data row1 col2" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col3" class="data row1 col3" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col4" class="data row1 col4" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col5" class="data row1 col5" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col6" class="data row1 col6" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow1_col7" class="data row1 col7" >nan</td> 
+    </tr>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col0" class="data row2 col0" >4.61696</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col1" class="data row2 col1" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col2" class="data row2 col2" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col3" class="data row2 col3" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col4" class="data row2 col4" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col5" class="data row2 col5" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col6" class="data row2 col6" >nan</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow2_col7" class="data row2 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col1" class="data row3 col1" >-28.0938</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col3" class="data row3 col3" >-31.5938</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col4" class="data row3 col4" >-1</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col5" class="data row3 col5" >972</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col6" class="data row3 col6" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow3_col7" class="data row3 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col0" class="data row4 col0" >3</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col1" class="data row4 col1" >7.19922</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col2" class="data row4 col2" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col3" class="data row4 col3" >0.600098</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col4" class="data row4 col4" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col5" class="data row4 col5" >1011.5</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col6" class="data row4 col6" >80</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow4_col7" class="data row4 col7" >2.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col0" class="data row5 col0" >7</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col1" class="data row5 col1" >15</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col2" class="data row5 col2" >2</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col3" class="data row5 col3" >8.39844</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col4" class="data row5 col4" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col5" class="data row5 col5" >1016.5</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col6" class="data row5 col6" >190</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow5_col7" class="data row5 col7" >3.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col0" class="data row6 col0" >12</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col1" class="data row6 col1" >22.2031</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col2" class="data row6 col2" >4</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col3" class="data row6 col3" >15</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col4" class="data row6 col4" >0</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col5" class="data row6 col5" >1021</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col6" class="data row6 col6" >280</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow6_col7" class="data row6 col7" >4.60156</td> 
+    </tr>    <tr> 
+        <th id="T_1de66618_1a69_11ea_a58e_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col0" class="data row7 col0" >15</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col1" class="data row7 col1" >48.3125</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col2" class="data row7 col2" >9</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col3" class="data row7 col3" >26.7031</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col4" class="data row7 col4" >597</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col5" class="data row7 col5" >1050</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col6" class="data row7 col6" >360</td> 
+        <td id="T_1de66618_1a69_11ea_a58e_88b1115a753erow7_col7" class="data row7 col7" >24.2031</td> 
+    </tr></tbody> 
+</table> <style  type="text/css" >
+</style>  
+<table id="T_1deb0322_1a69_11ea_bb5f_88b1115a753e" style='display:inline'><caption>Transzformált df_weather_test</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >site_id</th> 
+        <th class="col_heading level0 col1" >air_temperature</th> 
+        <th class="col_heading level0 col2" >cloud_coverage</th> 
+        <th class="col_heading level0 col3" >dew_temperature</th> 
+        <th class="col_heading level0 col4" >precip_depth_1_hr</th> 
+        <th class="col_heading level0 col5" >sea_level_pressure</th> 
+        <th class="col_heading level0 col6" >wind_direction</th> 
+        <th class="col_heading level0 col7" >wind_speed</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col0" class="data row0 col0" >277243</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col1" class="data row0 col1" >277139</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col2" class="data row0 col2" >136795</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col3" class="data row0 col3" >276916</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col4" class="data row0 col4" >181655</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col5" class="data row0 col5" >255978</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col6" class="data row0 col6" >264873</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow0_col7" class="data row0 col7" >276783</td> 
+    </tr>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col0" class="data row1 col0" >7.48465</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col1" class="data row1 col1" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col2" class="data row1 col2" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col3" class="data row1 col3" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col4" class="data row1 col4" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col5" class="data row1 col5" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col6" class="data row1 col6" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow1_col7" class="data row1 col7" >nan</td> 
+    </tr>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col0" class="data row2 col0" >4.61696</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col1" class="data row2 col1" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col2" class="data row2 col2" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col3" class="data row2 col3" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col4" class="data row2 col4" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col5" class="data row2 col5" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col6" class="data row2 col6" >nan</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow2_col7" class="data row2 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col1" class="data row3 col1" >-28.0938</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col2" class="data row3 col2" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col3" class="data row3 col3" >-31.5938</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col4" class="data row3 col4" >-1</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col5" class="data row3 col5" >972</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col6" class="data row3 col6" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow3_col7" class="data row3 col7" >0</td> 
+    </tr>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col0" class="data row4 col0" >3</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col1" class="data row4 col1" >7.19922</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col2" class="data row4 col2" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col3" class="data row4 col3" >0.600098</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col4" class="data row4 col4" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col5" class="data row4 col5" >1011.5</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col6" class="data row4 col6" >80</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow4_col7" class="data row4 col7" >2.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col0" class="data row5 col0" >7</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col1" class="data row5 col1" >15</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col2" class="data row5 col2" >2</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col3" class="data row5 col3" >8.39844</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col4" class="data row5 col4" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col5" class="data row5 col5" >1016.5</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col6" class="data row5 col6" >190</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow5_col7" class="data row5 col7" >3.09961</td> 
+    </tr>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col0" class="data row6 col0" >12</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col1" class="data row6 col1" >22.2031</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col2" class="data row6 col2" >4</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col3" class="data row6 col3" >15</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col4" class="data row6 col4" >0</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col5" class="data row6 col5" >1021</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col6" class="data row6 col6" >280</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow6_col7" class="data row6 col7" >4.60156</td> 
+    </tr>    <tr> 
+        <th id="T_1deb0322_1a69_11ea_bb5f_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col0" class="data row7 col0" >15</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col1" class="data row7 col1" >48.3125</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col2" class="data row7 col2" >9</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col3" class="data row7 col3" >26.7031</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col4" class="data row7 col4" >597</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col5" class="data row7 col5" >1050</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col6" class="data row7 col6" >360</td> 
+        <td id="T_1deb0322_1a69_11ea_bb5f_88b1115a753erow7_col7" class="data row7 col7" >24.2031</td> 
+    </tr></tbody> 
+</table> 
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style  type="text/css" >
+</style>  
+<table id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753e" style='display:inline'><caption>Eredeti df_building</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >site_id</th> 
+        <th class="col_heading level0 col1" >building_id</th> 
+        <th class="col_heading level0 col2" >square_feet</th> 
+        <th class="col_heading level0 col3" >year_built</th> 
+        <th class="col_heading level0 col4" >floor_count</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow0_col0" class="data row0 col0" >1449</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow0_col1" class="data row0 col1" >1449</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow0_col2" class="data row0 col2" >1449</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow0_col3" class="data row0 col3" >675</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow0_col4" class="data row0 col4" >355</td> 
+    </tr>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow1_col0" class="data row1 col0" >6.95238</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow1_col1" class="data row1 col1" >724</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow1_col2" class="data row1 col2" >92111.8</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow1_col3" class="data row1 col3" >inf</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow1_col4" class="data row1 col4" >3.74023</td> 
+    </tr>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow2_col0" class="data row2 col0" >5.00343</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow2_col1" class="data row2 col1" >418.435</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow2_col2" class="data row2 col2" >110770</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow2_col3" class="data row2 col3" >31.0625</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow2_col4" class="data row2 col4" >3.33398</td> 
+    </tr>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow3_col1" class="data row3 col1" >0</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow3_col2" class="data row3 col2" >283</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow3_col3" class="data row3 col3" >1900</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow3_col4" class="data row3 col4" >1</td> 
+    </tr>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow4_col0" class="data row4 col0" >3</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow4_col1" class="data row4 col1" >362</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow4_col2" class="data row4 col2" >23012</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow4_col3" class="data row4 col3" >1949</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow4_col4" class="data row4 col4" >1</td> 
+    </tr>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow5_col0" class="data row5 col0" >5</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow5_col1" class="data row5 col1" >724</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow5_col2" class="data row5 col2" >57673</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow5_col3" class="data row5 col3" >1970</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow5_col4" class="data row5 col4" >3</td> 
+    </tr>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow6_col0" class="data row6 col0" >13</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow6_col1" class="data row6 col1" >1086</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow6_col2" class="data row6 col2" >115676</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow6_col3" class="data row6 col3" >1995</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow6_col4" class="data row6 col4" >5</td> 
+    </tr>    <tr> 
+        <th id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow7_col0" class="data row7 col0" >15</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow7_col1" class="data row7 col1" >1448</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow7_col2" class="data row7 col2" >875000</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow7_col3" class="data row7 col3" >2017</td> 
+        <td id="T_1df5c8ae_1a69_11ea_9b16_88b1115a753erow7_col4" class="data row7 col4" >26</td> 
+    </tr></tbody> 
+</table> <style  type="text/css" >
+</style>  
+<table id="T_1df75242_1a69_11ea_a621_88b1115a753e" style='display:inline'><caption>Transzformált df_building</caption> 
+<thead>    <tr> 
+        <th class="blank level0" ></th> 
+        <th class="col_heading level0 col0" >site_id</th> 
+        <th class="col_heading level0 col1" >building_id</th> 
+        <th class="col_heading level0 col2" >square_feet</th> 
+        <th class="col_heading level0 col3" >year_built</th> 
+        <th class="col_heading level0 col4" >floor_count</th> 
+    </tr></thead> 
+<tbody>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row0" class="row_heading level0 row0" >count</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow0_col0" class="data row0 col0" >1449</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow0_col1" class="data row0 col1" >1449</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow0_col2" class="data row0 col2" >1449</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow0_col3" class="data row0 col3" >675</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow0_col4" class="data row0 col4" >355</td> 
+    </tr>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row1" class="row_heading level0 row1" >mean</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow1_col0" class="data row1 col0" >6.95238</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow1_col1" class="data row1 col1" >724</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow1_col2" class="data row1 col2" >92111.8</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow1_col3" class="data row1 col3" >inf</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow1_col4" class="data row1 col4" >3.74023</td> 
+    </tr>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row2" class="row_heading level0 row2" >std</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow2_col0" class="data row2 col0" >5.00343</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow2_col1" class="data row2 col1" >418.435</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow2_col2" class="data row2 col2" >110770</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow2_col3" class="data row2 col3" >31.0625</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow2_col4" class="data row2 col4" >3.33398</td> 
+    </tr>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row3" class="row_heading level0 row3" >min</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow3_col0" class="data row3 col0" >0</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow3_col1" class="data row3 col1" >0</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow3_col2" class="data row3 col2" >283</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow3_col3" class="data row3 col3" >1900</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow3_col4" class="data row3 col4" >1</td> 
+    </tr>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row4" class="row_heading level0 row4" >25%</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow4_col0" class="data row4 col0" >3</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow4_col1" class="data row4 col1" >362</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow4_col2" class="data row4 col2" >23012</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow4_col3" class="data row4 col3" >1949</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow4_col4" class="data row4 col4" >1</td> 
+    </tr>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row5" class="row_heading level0 row5" >50%</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow5_col0" class="data row5 col0" >5</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow5_col1" class="data row5 col1" >724</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow5_col2" class="data row5 col2" >57673</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow5_col3" class="data row5 col3" >1970</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow5_col4" class="data row5 col4" >3</td> 
+    </tr>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row6" class="row_heading level0 row6" >75%</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow6_col0" class="data row6 col0" >13</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow6_col1" class="data row6 col1" >1086</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow6_col2" class="data row6 col2" >115676</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow6_col3" class="data row6 col3" >1995</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow6_col4" class="data row6 col4" >5</td> 
+    </tr>    <tr> 
+        <th id="T_1df75242_1a69_11ea_a621_88b1115a753elevel0_row7" class="row_heading level0 row7" >max</th> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow7_col0" class="data row7 col0" >15</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow7_col1" class="data row7 col1" >1448</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow7_col2" class="data row7 col2" >875000</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow7_col3" class="data row7 col3" >2017</td> 
+        <td id="T_1df75242_1a69_11ea_a621_88b1115a753erow7_col4" class="data row7 col4" >26</td> 
+    </tr></tbody> 
+</table> 
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="-Adatszetek-egyes&#237;t&#233;se-"><span style="color:dimgray"> Adatszetek egyes&#237;t&#233;se </span><a class="anchor-link" href="#-Adatszetek-egyes&#237;t&#233;se-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span> <span class="o">=</span> <span class="n">df_train_red</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_building_red</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;building_id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">df_test_red</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_building_red</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;building_id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+
+<span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_weather_train_red</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;site_id&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_weather_test_red</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;site_id&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+<span class="n">display</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>building_id</th>
+      <th>meter</th>
+      <th>timestamp</th>
+      <th>meter_reading</th>
+      <th>site_id</th>
+      <th>primary_use</th>
+      <th>square_feet</th>
+      <th>year_built</th>
+      <th>floor_count</th>
+      <th>air_temperature</th>
+      <th>cloud_coverage</th>
+      <th>dew_temperature</th>
+      <th>precip_depth_1_hr</th>
+      <th>sea_level_pressure</th>
+      <th>wind_direction</th>
+      <th>wind_speed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>7432</td>
+      <td>2008.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>2720</td>
+      <td>2004.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>5376</td>
+      <td>1991.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>23685</td>
+      <td>2002.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>116607</td>
+      <td>1975.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>8000</td>
+      <td>2000.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Lodging/residential</td>
+      <td>27926</td>
+      <td>1981.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>121074</td>
+      <td>1989.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>60809</td>
+      <td>2003.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>0</td>
+      <td>2016-01-01 00:00:00</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>Office</td>
+      <td>27000</td>
+      <td>2010.0</td>
+      <td>NaN</td>
+      <td>25.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>1019.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>row_id</th>
+      <th>building_id</th>
+      <th>meter</th>
+      <th>timestamp</th>
+      <th>site_id</th>
+      <th>primary_use</th>
+      <th>square_feet</th>
+      <th>year_built</th>
+      <th>floor_count</th>
+      <th>air_temperature</th>
+      <th>cloud_coverage</th>
+      <th>dew_temperature</th>
+      <th>precip_depth_1_hr</th>
+      <th>sea_level_pressure</th>
+      <th>wind_direction</th>
+      <th>wind_speed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>7432</td>
+      <td>2008.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>2720</td>
+      <td>2004.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>5376</td>
+      <td>1991.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>23685</td>
+      <td>2002.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>4</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>116607</td>
+      <td>1975.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>5</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>8000</td>
+      <td>2000.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>6</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Lodging/residential</td>
+      <td>27926</td>
+      <td>1981.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>7</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>121074</td>
+      <td>1989.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>7</td>
+      <td>1</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>121074</td>
+      <td>1989.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>8</td>
+      <td>0</td>
+      <td>2017-01-01 00:00:00</td>
+      <td>0</td>
+      <td>Education</td>
+      <td>60809</td>
+      <td>2003.0</td>
+      <td>NaN</td>
+      <td>17.796875</td>
+      <td>4.0</td>
+      <td>11.703125</td>
+      <td>NaN</td>
+      <td>1021.5</td>
+      <td>100.0</td>
+      <td>3.599609</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="-Adatok-felt&#233;rk&#233;pez&#233;se-"><span style="color:dimgray"> Adatok felt&#233;rk&#233;pez&#233;se </span><a class="anchor-link" href="#-Adatok-felt&#233;rk&#233;pez&#233;se-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Az-adatok-felt&#233;rk&#233;pez&#233;se-egy-iterat&#237;v,-v&#233;gn&#233;lk&#252;li-folyamat,-mely-sor&#225;n-igyeksz&#252;nk-meg&#233;rteni-az-adatban-rejl&#337;-mint&#225;zatokat,-&#246;sszef&#252;gg&#233;seket,-trendeket,-valamint-anom&#225;li&#225;kat-alapvet&#337;-statistikai-elj&#225;r&#225;sok-haszn&#225;lata-r&#233;v&#233;n.">Az adatok felt&#233;rk&#233;pez&#233;se egy iterat&#237;v, v&#233;gn&#233;lk&#252;li folyamat, mely sor&#225;n igyeksz&#252;nk meg&#233;rteni az adatban rejl&#337; mint&#225;zatokat, &#246;sszef&#252;gg&#233;seket, trendeket, valamint anom&#225;li&#225;kat alapvet&#337; statistikai elj&#225;r&#225;sok haszn&#225;lata r&#233;v&#233;n.<a class="anchor-link" href="#Az-adatok-felt&#233;rk&#233;pez&#233;se-egy-iterat&#237;v,-v&#233;gn&#233;lk&#252;li-folyamat,-mely-sor&#225;n-igyeksz&#252;nk-meg&#233;rteni-az-adatban-rejl&#337;-mint&#225;zatokat,-&#246;sszef&#252;gg&#233;seket,-trendeket,-valamint-anom&#225;li&#225;kat-alapvet&#337;-statistikai-elj&#225;r&#225;sok-haszn&#225;lata-r&#233;v&#233;n.">&#182;</a></h4>
 </div>
 </div>
 </div>
