@@ -16,7 +16,7 @@
 # <b>train.csv</b><br/>
 # <ul>
 # <li><i>building_id</i> - Idegen kulcs az épület metadata fájlhoz.</li><br/>
-# <li><i>meter</i> - A mérő azonosító kódja (0: elektromosság (electricity), 1: vízhűtés (chilledwater), 2: gőz (steam), 3: melegvíz (hotwater). Nem minden épület rendelkezik minden mérő típussal.</li><br/>
+# <li><i>meter</i> - A mérő azonosító kódja (0: elektromosság (electricity), 1: hűtött víz (chilledwater), 2: gőz (steam), 3: melegvíz (hotwater). Nem minden épület rendelkezik minden mérő típussal.</li><br/>
 # <li><i>timestamp</i> - az időpont, amikor a mérés megvalósult</li><br/>
 # <li><i>meter_reading</i> - A célváltozó. Az energiafogyasztás kWh-ban kifejezve (vagy azzal ekvivalens). Valós adatok révén figyelembe kell venni a mérési hibát, mely a modellezési hibának az baseline szintjeként értelmezhető.</li>
 # </ul>
@@ -250,8 +250,41 @@ display(test.iloc[:10,:])
 
 # #### Az adatok feltérképezése egy iteratív, végnélküli folyamat, mely során igyekszünk megérteni az adatban rejlő mintázatokat, összefüggéseket, trendeket, valamint anomáliákat alapvető statistikai eljárások használata révén. 
 
-# In[ ]:
+# #### <span style="color:darkmagenta">Hiányzó adatok</span>
+
+# In[47]:
 
 
+train_missing = train.drop('meter_reading', axis=1).count().divide(len(train)).round(4).sort_values()*100
+test_missing = test.drop('row_id', axis=1).count().divide(len(test)).round(4).sort_values()*100
 
+
+fig, ax = plt.subplots(figsize=(12, 8))
+x = np.arange(len(train.drop('meter_reading', axis=1).columns))
+bar_width = 0.4
+b1 = ax.bar(x, train_missing, width=bar_width, color='indigo')
+b2 = ax.bar(x + bar_width, test_missing, width=bar_width, color='orange')
+
+# Fix the x-axes.
+ax.set_xticks(x + bar_width / 2)
+ax.set_xticklabels(train_missing.index, rotation=40)
+ax.legend([b1, b2], ['Train', 'Test'])
+ax.set_ylabel('%')
+ax.set_title('A rendelkezésre álló adat százalékban kifejezve', fontsize=16);
+
+
+# #### <span style="color:darkmagenta">A célváltozó vizsgálata</span>
+
+# In[99]:
+
+
+target_count = train['meter'].value_counts()
+target_count.index = ['Elektromosság', 'Hűtött víz', 'Gőz', 'Melegvíz']
+target_count = target_count.sort_values().to_frame().reset_index()
+target_count
+
+ax = sns.barplot(y= "meter", x = "index", data = target_count, palette=("BuPu"))
+sns.set(rc={'figure.figsize':(10,6)})
+ax.set(xlabel='Mérőtípus', ylabel='Mérések száma (egység = 10 millió)')
+ax.set_title('Adott mérőtípushoz tartozó mérések száma', fontsize=16)
 
