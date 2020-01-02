@@ -545,7 +545,7 @@ for sites in range(train['site_id'].nunique()):
 train.groupby(['timestamp', 'site_id'])['meter_reading'].mean().unstack().plot(subplots=True, layout=(8,2), figsize=(20,35), title=title_list)
 
 
-# Egyrészről, az év eleji alacsony átlagos energiafogyasztásért részben az első helyszín (Site 0) április előtti adatainak hiánya okolható. Másrészről, a 13-as helyszín ábrája nagyrészt hasonlít a teljes minta ábrájához. Amennyiben visszaemlékszünk arra, hogy a legtöbb mérési adat ezen a helyszínen lévő épületekről áll rendelkezésre, illetve az átlagos energiafogyasztás jelentősen nagyobb ezen a helyszínen, akkor könnyen belátható jelentős hatása a teljes mintára. Érdemes tehát külön megvizsgálni, az egyes épülettípusoknak miképpen alakul ezen a területen az energiafogyasztása.
+# Egyrészről, az év eleji alacsony átlagos energiafogyasztásért részben az első helyszín (Site 0) április előtti adatainak hiánya, részben pedig a 6-os helyszín valószínűsíthető adathinya okolható. Másrészről, a 13-as helyszín ábrája nagyrészt hasonlít a teljes minta ábrájához. Amennyiben visszaemlékszünk arra, hogy a legtöbb mérési adat ezen a helyszínen lévő épületekről áll rendelkezésre, illetve az átlagos energiafogyasztás jelentősen nagyobb ezen a helyszínen, akkor könnyen belátható jelentős hatása a teljes mintára. Érdemes tehát külön megvizsgálni a 6-os helyszínt, illetve a 13-as helyszínt arra vonatkozólag, hogy az egyes épülettípusoknak miképpen alakul ezen a területeken az energiafogyasztása.
 
 # In[106]:
 
@@ -567,36 +567,64 @@ site_13_df.groupby(['timestamp', 'building_id'])['meter_reading'].mean().unstack
 
 # Az 1099-es számú épület egyfajta "általános átlagként" funkcionál, nélküle az adatok időbeni eloszlása jelentősen változik:
 
-# In[110]:
+# In[119]:
 
 
-train_whtout_b1099 =  train[train.building_id != 1099]
+site_6_df = train[train.site_id == 6]
+    
+site_6_df.groupby(['timestamp', 'primary_use'])['meter_reading'].mean().unstack().plot(subplots=True, layout=(8,2), figsize=(20,35), title='A 6-os helyszín energiafogyasztásának változása elsődleges használat szerint:')
+
+
+# A 6-os helyszín esetében a szórakoztatás kategóriát érdemes górcső alá venni:
+
+# In[123]:
+
+
+site_6_df = train[(train.site_id == 6) & (train.primary_use == 'Entertainment/public assembly')]
+    
+site_6_df.groupby(['timestamp', 'building_id'])['meter_reading'].mean().unstack().plot(subplots=True, layout=(2,2), figsize=(20,10), title='A 13-as helyszínhez tartozó oktatási épületek energiafogyasztásának változása:')
+
+
+# A fentebbi ábra alapjá a 778-as és a 783-as épületek esetében nincs mérési adatunk az év nagyrészéről.
+
+# In[125]:
+
+
+train_whtout_fliers =  train[(train.building_id != 1099) & (train.building_id != 778) & (train.building_id != 783)]
 
 fig, axes = plt.subplots(1, 1, figsize=(14, 6), dpi=100)
 train_whtout_b1099[['timestamp', 'meter_reading']].set_index('timestamp').resample('H').mean()['meter_reading'].plot(ax=axes, label='Óránként', alpha=0.8).set_ylabel('Energiafogyasztás', fontsize=14);
 train_whtout_b1099[['timestamp', 'meter_reading']].set_index('timestamp').resample('D').mean()['meter_reading'].plot(ax=axes, label='Naponként', alpha=1).set_ylabel('Energiafogyasztás', fontsize=14);
-axes.set_title('Átlagos energiafogyasztás óránként és naponként az 1099-es épület nélkül', fontsize=16);
+axes.set_title('Átlagos energiafogyasztás óránként és naponként a 778-as, a 783-as és az 1099-es épület nélkül', fontsize=16);
 axes.legend()
 
 
-# In[26]:
+# A jelentős adathiánnyal rendelkező épületek kizárása után az energiafogyasztás éves alakulása már természetesebb képet mutat, magasabb átlagos értékekkel a hideg téli és forró nyári hónapokban. A továbbiakban folytassuk az elemzést ezen épületek nélkül.
+
+# In[126]:
+
+
+train = train_whtout_fliers
+
+
+# In[128]:
 
 
 fig, ax = plt.subplots(figsize=(10,5))
-ax = sns.boxplot(y="weekend", x="log_meter_reading", data=train_no_outliers, orient="h", palette="PuBu")
+ax = sns.boxplot(y="weekend", x="log_meter_reading", data=train, orient="h", palette="PuBu", showfliers=False)
 ax.set_ylabel('Hét napjai')
 ax.set_xlabel('Energiafogyasztás logaritmusának eloszlása')
 ax.set_yticklabels(['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'])
-plt.title('Az Energiafogyasztás logaritmusának eloszlása a hét napjai szerinti bontásban',  fontsize=14)
+plt.title('Az Energiafogyasztás logaritmusának eloszlása a hét napjai szerinti bontásban kiugró értékek nélkül',  fontsize=14)
 plt.show()
 
 
-# In[27]:
+# In[129]:
 
 
 meter_types = ['Elektromos áram', 'Hidegvíz', 'Gőz', 'Melegvíz']
-for meter_type in sorted(train_no_outliers['meter'].unique().tolist()):
-    filtered_train = train_no_outliers[train_no_outliers.meter == meter_type]
+for meter_type in sorted(train['meter'].unique().tolist()):
+    filtered_train = train[train.meter == meter_type]
     ax = filtered_train[['timestamp','log_meter_reading']].set_index('timestamp').resample("D")['log_meter_reading'].median().plot(kind='line', color="darkblue", figsize=(10,6), alpha=0.8, label=False)
     filtered_train[['timestamp','log_meter_reading']].set_index('timestamp').resample("H")['log_meter_reading'].median().plot(kind='line', color="darkblue", figsize=(10,6), alpha=0.3, label=False)
     ax2 = ax.twinx()
@@ -609,12 +637,12 @@ for meter_type in sorted(train_no_outliers['meter'].unique().tolist()):
     plt.show()
 
 
-# In[28]:
+# In[130]:
 
 
-ax = train_no_outliers[['timestamp','log_meter_reading']].set_index('timestamp').resample("H")['log_meter_reading'].mean().plot(kind='line',figsize=(10,6), alpha=0.7, label='Összes energiafogyasztás óránként')
+ax = train[['timestamp','log_meter_reading']].set_index('timestamp').resample("H")['log_meter_reading'].mean().plot(kind='line',figsize=(10,6), alpha=0.7, label='Összes energiafogyasztás óránként')
 ax2 = ax.twinx()
-train_no_outliers[['timestamp','air_temperature']].set_index('timestamp').resample("H")['air_temperature'].median().plot(ax=ax2, kind='line', color="orange", figsize=(10,6), alpha=0.7, label='Levegőhőmérséklet középértéke óránként')
+train[['timestamp','air_temperature']].set_index('timestamp').resample("H")['air_temperature'].median().plot(ax=ax2, kind='line', color="orange", figsize=(10,6), alpha=0.7, label='Levegőhőmérséklet középértéke óránként')
 plt.legend()
 plt.xlabel("Mérés ideje")
 plt.ylabel("Átlagos energiafogyasztás KWh-ban")
@@ -623,82 +651,36 @@ plt.title("Az Energiafogyasztás és levegőhőmérséklet változása az idő f
 
 # #### A használati típus szerinti energiafogyasztás vizsgálata
 
-# In[29]:
+# In[131]:
 
 
-sorted(train_no_outliers['primary_use'].unique().tolist())
+sorted(train['primary_use'].unique().tolist())
 fig, ax = plt.subplots(figsize=(10,12))
-ax = sns.boxplot(y="primary_use", x="log_meter_reading", data=train_no_outliers, orient="h", palette="PuBu")
+ax = sns.boxplot(y="primary_use", x="log_meter_reading", data=train_no_outliers, orient="h", palette="PuBu", showfliers=False)
 ax.set_ylabel('Elsődleges használati típus')
 ax.set_xlabel('Energiafogyasztás logaritmusának eloszlása')
 plt.title('Az Energiafogyasztás logaritmusának eloszlása elsődleges használati típus szerint',  fontsize=14)
 plt.show()
 
 
-# In[30]:
+# In[132]:
 
 
-train_no_outliers.groupby(['hour', 'primary_use'])['meter_reading'].median().unstack().plot(subplots=True, layout=(4,4))
-
-
-# #### Energiafogyasztás vizsgálata telephely szerinti bontásban
-
-# In[31]:
-
-
-title_list = list()
-for sites in range(train['site_id'].nunique()):
-    title_list.append(str('Telephely ' + str(sites) + str(' energiafogyasztásának változása az idő függvényében')))
-    
-train_no_outliers.groupby(['timestamp', 'site_id'])['meter_reading'].mean().unstack().plot(subplots=True, layout=(8,2), figsize=(20,35), title=title_list)
+train.groupby(['hour', 'primary_use'])['meter_reading'].median().unstack().plot(subplots=True, layout=(4,4))
 
 
 # #### Energiafogyasztás vizsgálata épületenként
 
-# In[ ]:
+# In[134]:
 
 
-fig, axes = plt.subplots(1, 1, figsize=(14, 6), dpi=100)
-train_no_outliers[['timestamp', 'meter_reading']].set_index('timestamp').resample('H').mean()['meter_reading'].plot(ax=axes, label='Óránként', alpha=0.8).set_ylabel('Energiafogyasztás', fontsize=14);
-train_no_outliers[['timestamp', 'meter_reading']].set_index('timestamp').resample('D').mean()['meter_reading'].plot(ax=axes, label='Naponként', alpha=1).set_ylabel('Energiafogyasztás', fontsize=14);
-axes.set_title('Átlagos energiafogyasztás óránként és naponként', fontsize=16);
-axes.legend()
-
-
-# In[36]:
-
-
-train_no_outliers.groupby(['building_id'])['meter_reading'].sum().plot()
+train.groupby(['building_id'])['meter_reading'].sum().plot()
 
 
 # ### <span style="color:dimgray"> Változók alakítása </span>
 
 # #### Szélirány átalakítása kategórikus változóvá. Részleteket lásd a következő kernelben:
 # https://www.kaggle.com/caesarlupum/ashrae-ligthgbm-simple-fe
-
-# In[61]:
-
-
-
-
-
-# In[52]:
-
-
-train_no_outliers['wind_direction'].unique()
-
-
-# In[59]:
-
-
-train_no_outliers.loc[train_no_outliers[np.isnan(train_no_outliers['wind_direction']) == True]] 
-
-
-# In[47]:
-
-
-print(train_no_outliers.columns)
-
 
 # ### <span style="color:dimgray"> Model illesztése </span>
 
