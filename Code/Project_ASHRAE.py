@@ -10,6 +10,11 @@
 # A kiírás célja, hogy a energiamegtakarítás jobb becslése révén motiválja a nagybefektetőket és pénzügyi intézményeket a területbe történő befektetésre, ezzel előrelendítve a hatékonyság kiépítését. Általánosságban az épületek energiahatékonyságának javítása illeszkedik napjaink egyik legmeghatározóbb agendájába, a klímaváltozás negatív következményei elleni küzdelemhez. Eszerint a fogyasztás visszafogása csökkentheti a környezeti terhelést, azon belül is különösképp az üvegházhatást okozó gázok kibocsátásának a visszafogását. 
 # 
 # Az energiahatékonyság predikciójában rejlő legjelentősebb kihívás a kontrafaktuális állapot becslése, vagyis jelen esetben annak meghatározása, hogy mennyi energiát fogyasztott volna az adott épület abban az esetben, ha az energiafogyasztással kapcsolatos fejlesztések nem kerültek volna kivitelezésre. A gépi tanulás segítségével olyan model fejlesztése a cél, mely három évet felölelő energetikai mérési és időjárás adatok alapján képes pontos becslést adni az energiahatékonyság javulására vonatkozólag. 
+# 
+# Jelen notebook jelentős mértékben támaszkodik az alábbi kernelekre:<br/>
+# https://www.kaggle.com/corochann/ashrae-training-lgbm-by-meter-type<br/>
+# https://www.kaggle.com/caesarlupum/ashrae-start-here-a-gentle-introduction<br/>
+# https://www.kaggle.com/c/ashrae-energy-prediction/notebooks
 
 # ### <span style="color:indigo"> Fájlok:</span>
 
@@ -62,21 +67,20 @@
 # In[1]:
 
 
-# Csomagok importálása validációhoz
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import KFold
-from sklearn import metrics, model_selection
-
 # Csomagok importálása vizualizációhoz
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Csomagok importálása változók alakításához
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn.preprocessing import LabelEncoder
+
 # Csomagok importálása modellezéshez
-import xgboost as xgb
-#import catboost as cbt
-import lightgbm as lgbm
+from sklearn.metrics import mean_squared_error
+import lightgbm as lgb
+from sklearn.model_selection import KFold, StratifiedKFold
+from tqdm import tqdm
 
 # Általános csomagok importálása
 import pandas as pd
@@ -92,7 +96,7 @@ from datetime import datetime
 
 
 # Az elérési út megadása
-root = 'C:/Users/ZsoltNagy/Desktop/github_projects/ASHRAE/project_ASHRAE/Data'
+root = 'C:\\Users\\zsolt\\Project_Github\\project_ASHRAE\\Data'
 
 
 # In[3]:
@@ -276,7 +280,7 @@ ax.set_title('A rendelkezésre álló adat százalékban kifejezve', fontsize=16
 
 # #### A fenti ábra alapján látható, hogy három változó, a szintek száma, az építése éve, illetve a felhőtakaró nagysága esetében a rendelkezésre álló adatok mennyisége alacsony. Érdemes tehát utána nézni, hogy esetleg van-e bármilyen mintázat, ami az adathiányt magyarázhatná.
 
-# In[42]:
+# In[11]:
 
 
 temp_df = train[train['floor_count'].isnull()]
@@ -287,7 +291,7 @@ for columns in temp_df.columns:
     print(temp_df[columns].value_counts().head(5))
 
 
-# In[41]:
+# In[12]:
 
 
 temp_df = train[train['year_built'].isnull()]
@@ -298,7 +302,7 @@ for columns in temp_df.columns:
     print(temp_df[columns].value_counts().head(5))
 
 
-# In[40]:
+# In[13]:
 
 
 temp_df = train[train['cloud_coverage'].isnull()]
@@ -315,7 +319,7 @@ for columns in temp_df.columns:
 
 # #### A célváltozó eloszlása erősen ferde a kiugró értékek miatt.
 
-# In[37]:
+# In[14]:
 
 
 ax = sns.boxplot(y='meter_reading',
@@ -366,7 +370,7 @@ plt.xlabel('Energiafogyasztás KWh-ban')
 plt.show()
 
 
-# In[83]:
+# In[17]:
 
 
 # A célváltozó eloszlásának lekérése logaritmikus transzformációt követően
@@ -379,7 +383,7 @@ plt.xlabel('Energiafogyasztás KWh-ban')
 plt.show()
 
 
-# In[84]:
+# In[18]:
 
 
 # A célváltozó eloszlásának lekérése logaritmikus transzformációt követően
@@ -396,7 +400,7 @@ plt.show()
 
 # #### A független változók elemzése
 
-# In[85]:
+# In[19]:
 
 
 cat_features_df = train[['meter', 'site_id', 'primary_use', 'floor_count']]
@@ -404,7 +408,7 @@ num_features_df = train[['square_feet', 'year_built', 'air_temperature', 'cloud_
                                     'precip_depth_1_hr', 'sea_level_pressure', 'wind_direction', 'wind_speed']]
 
 
-# In[86]:
+# In[20]:
 
 
 for features in cat_features_df:
@@ -431,7 +435,7 @@ for features in cat_features_df:
 # <li><i>Szintek száma </i> - Az épületek többsége egy vagy kétszintes volt  </li><br/>
 # </ul>
 
-# In[88]:
+# In[21]:
 
 
 for features in num_features_df:
@@ -454,7 +458,7 @@ for features in num_features_df:
 
 # #### Adott mérőtípushoz tartozó mérések száma
 
-# In[89]:
+# In[22]:
 
 
 target_count = train['meter'].value_counts()
@@ -469,7 +473,7 @@ ax.set_title('Adott mérőtípushoz tartozó mérések száma', fontsize=14)
 
 # #### Összes energiafogyasztás mérőtípusonként
 
-# In[92]:
+# In[23]:
 
 
 target_sum = train.groupby(['meter'])['meter_reading'].sum()
@@ -484,7 +488,7 @@ ax.set_title('Adott mérőtípushoz tartozó összfogyasztás', fontsize=14)
 
 # Míg a gőz esetében a mérések száma nagyjából hatoda a elektromos áram fogyasztással kapcsolatban rendelkezésre álló mérések számának, az összfogyasztás tekintetében a gőz mérőtípushoz kiugróan magas fogyasztás társul.
 
-# In[93]:
+# In[24]:
 
 
 for meter_type in sorted(train['meter'].unique().tolist()):
@@ -500,17 +504,18 @@ plt.ylabel('Sűrűség')
 
 # #### Az idő aspektus vizsgálata a célváltozó függvényében
 
-# In[94]:
+# In[25]:
 
 
 train["timestamp"] = pd.to_datetime(train["timestamp"])
+test["timestamp"] = pd.to_datetime(test["timestamp"])
 train["hour"] = train["timestamp"].dt.hour
 train["day"] = train["timestamp"].dt.day
 train["weekend"] = train["timestamp"].dt.weekday
 train["month"] = train["timestamp"].dt.month
 
 
-# In[95]:
+# In[26]:
 
 
 train['log_meter_reading'] = np.log1p(train['meter_reading'])
@@ -522,7 +527,7 @@ plt.title("Az Energiafogyasztás középértéke óránként",  fontsize=14)
 plt.show()
 
 
-# In[96]:
+# In[27]:
 
 
 fig, axes = plt.subplots(1, 1, figsize=(14, 6), dpi=100)
@@ -535,7 +540,7 @@ axes.legend()
 # Az átlagos energiafogyasztás ábrája meglehetősen furán fest, március után jelentős ugrás látható, míg június közepétől szinte 0 közelébe esik.
 # Érdemes tehát egy közelebbi pillantást vetni rá.
 
-# In[99]:
+# In[28]:
 
 
 title_list = list()
@@ -547,7 +552,7 @@ train.groupby(['timestamp', 'site_id'])['meter_reading'].mean().unstack().plot(s
 
 # Egyrészről, az év eleji alacsony átlagos energiafogyasztásért részben az első helyszín (Site 0) április előtti adatainak hiánya, részben pedig a 6-os helyszín valószínűsíthető adathinya okolható. Másrészről, a 13-as helyszín ábrája nagyrészt hasonlít a teljes minta ábrájához. Amennyiben visszaemlékszünk arra, hogy a legtöbb mérési adat ezen a helyszínen lévő épületekről áll rendelkezésre, illetve az átlagos energiafogyasztás jelentősen nagyobb ezen a helyszínen, akkor könnyen belátható jelentős hatása a teljes mintára. Érdemes tehát külön megvizsgálni a 6-os helyszínt, illetve a 13-as helyszínt arra vonatkozólag, hogy az egyes épülettípusoknak miképpen alakul ezen a területeken az energiafogyasztása.
 
-# In[106]:
+# In[29]:
 
 
 site_13_df = train[train.site_id == 13]
@@ -557,7 +562,7 @@ site_13_df.groupby(['timestamp', 'primary_use'])['meter_reading'].mean().unstack
 
 # A fentiak alapján az oktatási intézmények között kell tovább kutatodni. Lássuk az ehhez a kategóriához tartozó épületeket.
 
-# In[109]:
+# In[30]:
 
 
 site_13_df = train[(train.site_id == 13) & (train.primary_use == 'Education')]
@@ -567,7 +572,7 @@ site_13_df.groupby(['timestamp', 'building_id'])['meter_reading'].mean().unstack
 
 # Az 1099-es számú épület egyfajta "általános átlagként" funkcionál, nélküle az adatok időbeni eloszlása jelentősen változik:
 
-# In[119]:
+# In[31]:
 
 
 site_6_df = train[train.site_id == 6]
@@ -577,7 +582,7 @@ site_6_df.groupby(['timestamp', 'primary_use'])['meter_reading'].mean().unstack(
 
 # A 6-os helyszín esetében a szórakoztatás kategóriát érdemes górcső alá venni:
 
-# In[123]:
+# In[32]:
 
 
 site_6_df = train[(train.site_id == 6) & (train.primary_use == 'Entertainment/public assembly')]
@@ -587,27 +592,27 @@ site_6_df.groupby(['timestamp', 'building_id'])['meter_reading'].mean().unstack(
 
 # A fentebbi ábra alapjá a 778-as és a 783-as épületek esetében nincs mérési adatunk az év nagyrészéről.
 
-# In[125]:
+# In[33]:
 
 
 train_whtout_fliers =  train[(train.building_id != 1099) & (train.building_id != 778) & (train.building_id != 783)]
 
 fig, axes = plt.subplots(1, 1, figsize=(14, 6), dpi=100)
-train_whtout_b1099[['timestamp', 'meter_reading']].set_index('timestamp').resample('H').mean()['meter_reading'].plot(ax=axes, label='Óránként', alpha=0.8).set_ylabel('Energiafogyasztás', fontsize=14);
-train_whtout_b1099[['timestamp', 'meter_reading']].set_index('timestamp').resample('D').mean()['meter_reading'].plot(ax=axes, label='Naponként', alpha=1).set_ylabel('Energiafogyasztás', fontsize=14);
+train_whtout_fliers[['timestamp', 'meter_reading']].set_index('timestamp').resample('H').mean()['meter_reading'].plot(ax=axes, label='Óránként', alpha=0.8).set_ylabel('Energiafogyasztás', fontsize=14);
+train_whtout_fliers[['timestamp', 'meter_reading']].set_index('timestamp').resample('D').mean()['meter_reading'].plot(ax=axes, label='Naponként', alpha=1).set_ylabel('Energiafogyasztás', fontsize=14);
 axes.set_title('Átlagos energiafogyasztás óránként és naponként a 778-as, a 783-as és az 1099-es épület nélkül', fontsize=16);
 axes.legend()
 
 
 # A jelentős adathiánnyal rendelkező épületek kizárása után az energiafogyasztás éves alakulása már természetesebb képet mutat, magasabb átlagos értékekkel a hideg téli és forró nyári hónapokban. A továbbiakban folytassuk az elemzést ezen épületek nélkül.
 
-# In[126]:
+# In[34]:
 
 
 train = train_whtout_fliers
 
 
-# In[128]:
+# In[35]:
 
 
 fig, ax = plt.subplots(figsize=(10,5))
@@ -619,7 +624,7 @@ plt.title('Az Energiafogyasztás logaritmusának eloszlása a hét napjai szerin
 plt.show()
 
 
-# In[129]:
+# In[36]:
 
 
 meter_types = ['Elektromos áram', 'Hidegvíz', 'Gőz', 'Melegvíz']
@@ -637,7 +642,7 @@ for meter_type in sorted(train['meter'].unique().tolist()):
     plt.show()
 
 
-# In[130]:
+# In[37]:
 
 
 ax = train[['timestamp','log_meter_reading']].set_index('timestamp').resample("H")['log_meter_reading'].mean().plot(kind='line',figsize=(10,6), alpha=0.7, label='Összes energiafogyasztás óránként')
@@ -651,19 +656,19 @@ plt.title("Az Energiafogyasztás és levegőhőmérséklet változása az idő f
 
 # #### A használati típus szerinti energiafogyasztás vizsgálata
 
-# In[131]:
+# In[38]:
 
 
 sorted(train['primary_use'].unique().tolist())
 fig, ax = plt.subplots(figsize=(10,12))
-ax = sns.boxplot(y="primary_use", x="log_meter_reading", data=train_no_outliers, orient="h", palette="PuBu", showfliers=False)
+ax = sns.boxplot(y="primary_use", x="log_meter_reading", data=train, orient="h", palette="PuBu", showfliers=False)
 ax.set_ylabel('Elsődleges használati típus')
 ax.set_xlabel('Energiafogyasztás logaritmusának eloszlása')
 plt.title('Az Energiafogyasztás logaritmusának eloszlása elsődleges használati típus szerint',  fontsize=14)
 plt.show()
 
 
-# In[132]:
+# In[39]:
 
 
 train.groupby(['hour', 'primary_use'])['meter_reading'].median().unstack().plot(subplots=True, layout=(4,4))
@@ -671,7 +676,7 @@ train.groupby(['hour', 'primary_use'])['meter_reading'].median().unstack().plot(
 
 # #### Energiafogyasztás vizsgálata épületenként
 
-# In[134]:
+# In[40]:
 
 
 train.groupby(['building_id'])['meter_reading'].sum().plot()
@@ -679,10 +684,316 @@ train.groupby(['building_id'])['meter_reading'].sum().plot()
 
 # ### <span style="color:dimgray"> Változók alakítása </span>
 
-# #### Szélirány átalakítása kategórikus változóvá. Részleteket lásd a következő kernelben:
-# https://www.kaggle.com/caesarlupum/ashrae-ligthgbm-simple-fe
+# A modellezés előtt három lényeges teendőnk van az adatok alakítása kapcsán:
+# <ul>
+# <li><i>Anomáliák eltávolítása</i> </li><br/>
+# <li><i>Hiányzó időjárási adatok pótlása</i> </li><br/>
+# <li><i>Időzóna korrigálása</i> </li><br/>
+# </ul>
+
+# #### <span style="color:dimgray"> Anomáliák kezelése </span> 
+
+# Ahogy korábban láthattuk, az első helyszín (Site 0) április előtti mérési adatai nem megfelelőek. Ezen adatok más mértékegységben kerültek megadásra, ahogy ez ezen a fórumon kifejtésre került: https://www.kaggle.com/c/ashrae-energy-prediction/discussion/119261. Javítsuk őket!
+# 
+
+# In[41]:
+
+
+train[(train.building_id <= 104) & (train.meter == 0) & (train.timestamp <= "2016-05-20")].plot(x='timestamp', y='meter_reading')
+
+
+# In[42]:
+
+
+train.loc[((train.building_id <= 104) & (train.meter == 0) & (train.timestamp <= "2016-05-20")),'meter_reading'] = train.loc[((train.building_id <= 104) & (train.meter == 0) & (train.timestamp <= "2016-05-20")),'meter_reading']* 0.2931
+
+
+# A változás a mértékegységben látható:
+
+# In[43]:
+
+
+train[(train.building_id <= 104) & (train.meter == 0) & (train.timestamp <= "2016-05-20")].plot(x='timestamp', y='meter_reading')
+
+
+# A modellezés szempontjából további problémát jelentenek a kiugró értékek, melyek a model tanítása során félrevezetők lehetnek, rontva a model általánosíthatóságát (csökkentve a predikció pontosságát űj adatokon). A kiugró értékeket helyszínenként külön-külön vizsgálhatjuk. Erre ezen bevezető alkalmával nem kerül sor.
+
+# #### <span style="color:dimgray"> Hiányzó időjárási adatok pótlása </span> 
+
+# In[44]:
+
+
+print(df_weather_train_red.isna().sum())
+print(df_weather_test_red.isna().sum())
+
+
+# In[45]:
+
+
+# Adatok pótlása interpoláció segítségével
+df_weather_train_red = df_weather_train_red.groupby('site_id').apply(lambda group: group.interpolate(limit_direction='both'))
+df_weather_test_red = df_weather_test_red.groupby('site_id').apply(lambda group: group.interpolate(limit_direction='both'))
+
+
+# In[46]:
+
+
+print(df_weather_train_red.isna().sum())
+print(df_weather_test_red.isna().sum())
+
+
+# Az interpoláció sikeresnek mutatkozott az adathiány csökkentésében, de továbbra is számos változó esetében jelentős maradt a hiányzó adatok mennyisége. A további adatpótlást MICE módszerrel végezzük.
+
+# In[47]:
+
+
+df_weather_train_red["timestamp"] = pd.to_datetime(df_weather_train_red["timestamp"])
+df_weather_test_red["timestamp"] = pd.to_datetime(df_weather_test_red["timestamp"])
+
+imp = IterativeImputer(random_state=0)
+imp.fit(df_weather_train_red.loc[:, ~df_weather_train.columns.isin(['site_id', 'timestamp'])])
+imp.fit(df_weather_test_red.loc[:, ~df_weather_train.columns.isin(['site_id', 'timestamp'])])
+df_weather_train_imp = imp.transform(df_weather_train_red.loc[:, ~df_weather_train_red.columns.isin(['site_id', 'timestamp'])])
+df_weather_test_imp = imp.transform(df_weather_test_red.loc[:, ~df_weather_test_red.columns.isin(['site_id', 'timestamp'])])
+
+columns = ['air_temperature', 'cloud_coverage', 'dew_temperature', 'precip_depth_1_hr',  'sea_level_pressure',
+'wind_direction',  'wind_speed']
+df_weather_train_imp = pd.DataFrame(df_weather_train_imp)
+df_weather_train_imp.columns = columns
+df_weather_train_imp = df_weather_train_imp.assign(site_id = df_weather_train_red["site_id"],  timestamp=df_weather_train_red["timestamp"])
+
+df_weather_test_imp = pd.DataFrame(df_weather_test_imp)
+df_weather_test_imp.columns = columns
+df_weather_test_imp = df_weather_test_imp.assign(site_id = df_weather_test_red["site_id"],  timestamp=df_weather_test_red["timestamp"])
+
+
+# In[48]:
+
+
+print(df_weather_train_imp.isna().sum())
+print(df_weather_test_imp.isna().sum())
+
+
+# Az időjárás adatszetekben további hiányzó adat nem maradt. Lássuk az épület adatszettet:
+
+# In[49]:
+
+
+df_building_red.isna().sum()
+
+
+# In[50]:
+
+
+imp = IterativeImputer(random_state=0)
+imp.fit(df_building_red.loc[:, ~df_building_red.columns.isin(['primary_use'])])
+df_building_imp = imp.transform(df_building_red.loc[:, ~df_building_red.columns.isin(['primary_use'])])
+
+columns = ['site_id', 'building_id', 'square_feet', 'year_built', 'floor_count']
+df_building_imp = pd.DataFrame(df_building_imp)
+df_building_imp.columns = columns
+df_building_imp = df_building_imp.assign(primary_use = df_building_red["primary_use"])
+
+
+# In[51]:
+
+
+df_building_imp.isna().sum()
+
+
+# Az épület adatszetben is pótoltuk a hiányzó adatokat. Most már egyesíthetjük újra az adatszetteket:
+
+# In[52]:
+
+
+df_train_red["timestamp"] = pd.to_datetime(df_train_red["timestamp"])
+df_test_red["timestamp"] = pd.to_datetime(df_test_red["timestamp"])
+
+train_full = df_train_red.merge(df_building_imp, on='building_id', how='left')
+test_full = df_test_red.merge(df_building_imp, on='building_id', how='left')
+
+train_full = train_full.merge(df_weather_train_imp, on=['site_id', 'timestamp'], how='left')
+test_full = test_full.merge(df_weather_test_imp, on=['site_id', 'timestamp'], how='left')
+
+train_full.dropna(subset=['air_temperature', 'cloud_coverage', 'dew_temperature', 'precip_depth_1_hr', 'sea_level_pressure', 
+'wind_direction', 'wind_speed'], how='all', inplace=True)
+
+test_full.dropna(subset=['air_temperature', 'cloud_coverage', 'dew_temperature', 'precip_depth_1_hr', 'sea_level_pressure', 
+'wind_direction', 'wind_speed'], how='all', inplace=True)
+
+display(train_full.iloc[:10,:])
+display(test_full.iloc[:10,:])
+
+
+# In[53]:
+
+
+test_full.isna().sum()
+
+
+# Az idősor esetében problémát jelent, hogy az egyes helyszínek szerinti időbélyeg nem lokális idő szerint került megadásra, ami jelentős torzítást okozhat az energiafogyasztás prediktálásában, hiszen a fogyasztás változása a helyi időt követi, ahogy arra erediteleg az alábbi kernel felhívta a figyelmet: https://www.kaggle.com/nz0722/aligned-timestamp-lgbm-by-meter-type 
+# Mivel az épületek geo adatai nem állnak rendelkezésre, így a korrekciót a hőmérsékleti napi csúcsidőszakok alapján lehet megtenni.
+
+# In[54]:
+
+
+weather = pd.concat([df_weather_train_red, df_weather_test_red],ignore_index=True)
+weather_key = ['site_id', 'timestamp']
+
+temp_skeleton = weather[weather_key + ['air_temperature']].drop_duplicates(subset=weather_key).sort_values(by=weather_key).copy()
+temp_skeleton["timestamp"] = pd.to_datetime(temp_skeleton["timestamp"])
+
+temp_skeleton['temp_rank'] = temp_skeleton.groupby(['site_id', temp_skeleton.timestamp.dt.date])['air_temperature'].rank('average')
+
+
+df_2d = temp_skeleton.groupby(['site_id', temp_skeleton.timestamp.dt.hour])['temp_rank'].mean().unstack(level=1)
+
+site_ids_offsets = pd.Series(df_2d.values.argmax(axis=1) - 14)
+site_ids_offsets.index.name = 'site_id'
+
+def timestamp_align(df):
+    df['offset'] = df.site_id.map(site_ids_offsets)
+    df['timestamp_aligned'] = (df.timestamp - pd.to_timedelta(df.offset, unit='H'))
+    df['timestamp'] = df['timestamp_aligned']
+    del df['timestamp_aligned']
+    return df
+
+
+# In[55]:
+
+
+# Változtatás előtti utolsó 5 adatsor
+train.tail()
+
+
+# In[56]:
+
+
+# időbélyeg változó korrekciója
+train = timestamp_align(train)
+test = timestamp_align(test)
+
+
+# In[57]:
+
+
+# Változtatás előtti utolsó 5 adatsor
+train.tail()
+
+
+# In[58]:
+
+
+# Néhány további változó hozzáadása
+def transform_df(df):
+    df['hour'] = np.uint8(df['timestamp'].dt.hour)
+    df['day'] = np.uint8(df['timestamp'].dt.day)
+    df['weekday'] = np.uint8(df['timestamp'].dt.weekday)
+    df['month'] = np.uint8(df['timestamp'].dt.month)
+    
+    df['square_feet'] = np.log(df['square_feet'])
+    
+    return df
+
+
+# In[59]:
+
+
+train_full = transform_df(train_full)
+test_full = transform_df(test_full)
+
 
 # ### <span style="color:dimgray"> Model illesztése </span>
+
+# In[60]:
+
+
+cat_feat = ['meter', "site_id", "building_id", "primary_use", "hour", "weekday", "wind_direction"]
+
+
+# In[61]:
+
+
+# Encoding categorical features to use in the lightgbm model
+le = LabelEncoder()
+train_full['primary_use'] = le.fit_transform(train_full['primary_use'])
+test_full['primary_use'] = le.fit_transform(test_full['primary_use'])
+
+
+# In[62]:
+
+
+train_full.info()
+
+
+# In[63]:
+
+
+target = np.log1p(train_full['meter_reading'])
+train_full = train_full.drop(['meter_reading', 'timestamp'], axis = 1)
+test_full = test_full.drop(['row_id', 'timestamp'], axis = 1)
+
+
+# In[65]:
+
+
+
+params = {
+            'boosting_type': 'gbdt',
+            'objective': 'regression',
+            'metric': {'rmse'},
+            'subsample': 0.4,
+            'subsample_freq': 1,
+            'learning_rate': 0.25,
+            'num_leaves': 31,
+            'feature_fraction': 0.8,
+            'lambda_l1': 1,
+            'lambda_l2': 1
+            }
+
+folds = 4
+seed = 55
+kf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
+
+models = []
+
+## stratify data by building_id
+for train_index, val_index in tqdm(kf.split(train_full, train_full['building_id']), total=folds):
+    train_X = train_full.iloc[train_index]
+    val_X = train_full.iloc[val_index]
+    train_y = target.iloc[train_index]
+    val_y = target.iloc[val_index]
+    lgb_train = lgb.Dataset(train_X, train_y, categorical_feature=cat_feat)
+    lgb_eval = lgb.Dataset(val_X, val_y, categorical_feature=cat_feat)
+    gbm = lgb.train(params,
+                lgb_train,
+                num_boost_round=500,
+                valid_sets=(lgb_train, lgb_eval),
+                early_stopping_rounds=100,
+                verbose_eval = 100)
+    models.append(gbm)
+
+
+# In[66]:
+
+
+plt.rcParams['figure.figsize'] = (18,10)
+for model in range(0,3):
+    lgb.plot_importance(models[model], importance_type='gain')
+    plt.show()
+
+
+# 500 iteráció után a négyzetes középhiba (Root mean squered error (RMSE)) 0.73 körüli értékre esik mind a négy adathalmazon, amelyeket a k-fold keresztvalidáció során hoztunk létre. További iterációk révén a hiba mértéke tovább csökkenthető lenne, de most erre nem tér ki a modellezés. 
+# A legfontosabb változók az épületID és a épületnagyság voltak. 
+
+# Jelen modellépítés itt véget ér, ugyanakkor a további fejlesztésre rengeteg tér maradt, többek között, de egyáltalán nem kizárólagosan:
+# <ul>
+# <li>Kiugró értékek eltávolítása</li><br/>
+# <li>Modellparaméterek finomhangolása</li><br/>
+# <li>Többszörös modellépítés, helyszínenként, mérőegységenként, stb.</li><br/>
+# <li>További algoritmusok kipróbálása</li><br/>
+# </ul>
+# <b>A további lépésekhez élvezetes munkát és kitartást!</b>
 
 # In[ ]:
 
